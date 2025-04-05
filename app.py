@@ -1,11 +1,20 @@
-from gh import GitWrap
-from dotenv import load_dotenv
-import os
 from pprint import pprint
+if __name__ == '__main__':
+    # Setup logger before any imports begin
+    from core.logger import log_setup
+    log_setup()
 
-load_dotenv()
-GIT_TOKEN = os.environ.get('GIT_TOKEN', None)
+    # Dependencies
+    from core.GitWrap import GitWrap
+    from config.settings import get_settings
+    from dotenv import load_dotenv
+    # from pprint import pprint
+    import logging
 
-git_api = GitWrap(GIT_TOKEN)
+    log = logging.getLogger(__name__)
+    load_dotenv()
+    config = get_settings()
+    gh = GitWrap(config.get('GIT_TOKEN'))
 
-pprint(git_api.repos_data)
+    for r in gh.get_repo_data:
+        print(r)
