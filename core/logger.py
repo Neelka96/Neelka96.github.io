@@ -1,16 +1,22 @@
 import logging
 import logging.config
-from config.settings import get_settings
-from dotenv import load_dotenv
+from collections.abc import Sequence, Mapping
+
+# Custom Configuration class for app
+from Config import Config
 
 def log_setup() -> None:
-    load_dotenv()
-    config = get_settings()
-    # env = config.get('ENV')
-    azure_conn = config.get('AZURE_CONN')
-    log_level = config.get('LOG_LEVEL')
-    log_file = config.get('LOG_FILE')
+    # Bring in singleton instance class
+    config = Config()
 
+    # Set up variables
+    env = config.ENV
+    azure_conn = config.AZURE_CONN
+    log_level = config.LOG_LEVEL
+    log_file = config.LOG_FILE
+    root_handlers: list[str] = ['console', 'file']
+
+    # Explicit logging dictionary
     logging_config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -32,18 +38,27 @@ def log_setup() -> None:
                 'level': log_level,
                 'filename': log_file,
             },
-            # 'azure': {
-            #     'class': 'opencensus.ext.azure.log_exporter.AzureLogHandler',
-            #     'level': log_level,
-            #     'connection_string': azure_conn,
-            # },
         },
         'root': {
-            # 'handlers': ['console', 'file', 'azure'],
-            'handlers': ['console', 'file'],
+            'handlers': root_handlers,
             'level': log_level,
         },
     }
+    # Dynamic element to detect if an azure handler is needed
+    if env == 'production' and azure_conn:
+        logging_config['handlers']['azure'] = {
+            'class': 'opencensus.ext.azure.log_exporter.AzureLogHandler',
+            'level': log_level,
+            'connection_string': azure_conn,
+        }
+        root_handlers.append('azure')
 
+    # Set up global logging configuration - called once at the very beginning of application
     logging.config.dictConfig(logging_config)
     return None
+
+
+# EOF
+
+if __name__ == '__main__':
+    print('This module is intended to be imported, not run directly.')

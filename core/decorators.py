@@ -1,5 +1,4 @@
 from functools import wraps
-from collections.abc import Callable, Generator
 from github import (
     GithubException
     ,BadCredentialsException
@@ -13,7 +12,7 @@ from github import (
 import logging
 log = logging.getLogger(__name__)
 
-def github_error_handle(func: Callable) -> Generator:
+def github_error_handle(func):
     '''Error handler for all Github API issues.
 
     Args:
@@ -22,17 +21,11 @@ def github_error_handle(func: Callable) -> Generator:
     Yields:
         Generator
     '''
-    # def except_raise(msg: str):
-    #     log.exception(msg)
-    #     raise
 
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except GithubException as e:
-            log.exception(f'GitHub API error (status {e.status}): {e.data}')
-            raise RuntimeError(f'GitHub API error: {e.status}') from e
         except BadCredentialsException as e:
             log.exception('Invalid credentials provided to GitHub!')
             raise
@@ -51,5 +44,14 @@ def github_error_handle(func: Callable) -> Generator:
         except TwoFactorException as e:
             log.exception('GitHub onetime password for two-factor authentication required.')
             raise
+        except GithubException as e:
+            log.exception(f'GitHub API error (status {e.status}): {e.data}')
+            raise RuntimeError(f'GitHub API error: {e.status}') from e
 
     return wrapper
+
+
+# EOF
+
+if __name__ == '__main__':
+    print('This module is intended to be imported, not run directly.')
