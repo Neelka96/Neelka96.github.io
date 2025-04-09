@@ -1,6 +1,5 @@
 import logging
 import logging.config
-from collections.abc import Sequence, Mapping
 
 # Custom Configuration class for app
 from Config import Config
