@@ -1,6 +1,6 @@
 from .db import Database, User, Repository, Language, RepoLanguage
 from .decorators import github_error_handle
-from .gitwrap import GitWrap
+from .etl_tools import create_dict, create_ref_table
 from .logger import log_setup
 
 # EOF

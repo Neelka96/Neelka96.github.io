@@ -81,7 +81,7 @@ class Database:
                 log.debug('execute_query() successfully utilized.')
                 return result.scalars().all() if isinstance(stmt, Select) else 0
             except Exception:
-                log.critical('Could not use BP reduced execute_query() function.')
+                log.critical('Could not use std execute_query() function.')
                 raise
 
 

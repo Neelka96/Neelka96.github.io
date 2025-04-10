@@ -1,3 +1,4 @@
+from .gitwrap import GitWrap
 
 # EOF
 

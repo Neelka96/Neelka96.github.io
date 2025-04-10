@@ -4,7 +4,7 @@ if __name__ == '__main__':
     log_setup()
 
     # Dependencies
-    from lib import GitWrap
+    from jobs.gitwrap_pipeline.gitwrap import GitWrap
     from config import Config
     import logging
     

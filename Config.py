@@ -7,6 +7,8 @@ load_dotenv()
 class Config:
     _instance = None
 
+    # Singleton class instance across 1 run setup
+    # Loads grouped dynamic variable initializers
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Config, cls).__new__(cls)
@@ -15,6 +17,7 @@ class Config:
             cls._instance._get_github_linguist()
         return cls._instance
     
+    # Subprivate loading methods for configuration
     def _load_env_vars(self):
         self.ENV = os.environ.get('APP_ENV', 'development').lower()
         self.GIT_TOKEN = os.environ.get('GIT_TOKEN')
@@ -37,7 +40,7 @@ class Config:
         self.LINGUIST_URL = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml'
         self.LINGUIST_CACHE = self.STORAGE / 'linguist_cache.yaml'
 
-
+    # Private Methods for configuration
     def __get_db_name(self):
         if self.ENV == 'production':
             self.db_name = 'gitwrap.sqlite'
