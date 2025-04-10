@@ -1,17 +1,11 @@
+from pathlib import Path
 import requests
 import yaml
 import logging
 log = logging.getLogger(__name__)
 
-from Config import Config
-config = Config()
 
-
-def fetch_github_linguist() -> dict:
-    # Assign variables from config
-    url = config.LINGUIST_URL
-    cache = config.LINGUIST_CACHE
-
+def get_github_languages(url: str, cache: Path) -> dict:
     # Check for cache/file existence -> Load it exit early
     if cache.exists():
         log.debug('Reading github-linguist YAML from cache.')
@@ -25,5 +19,10 @@ def fetch_github_linguist() -> dict:
 
     log.debug('Writing YAML data to cache.')
     cache.write_text(yaml.dump(data))
-    
     return data
+
+
+# EOF
+
+if __name__ == '__main__':
+    print('This module is intended to be imported, not run directly.')

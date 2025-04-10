@@ -1,3 +1,4 @@
+# Import dependencies
 from functools import wraps
 from github import (
     GithubException
@@ -8,9 +9,9 @@ from github import (
     ,UnknownObjectException
     ,TwoFactorException
     )
-
 import logging
 log = logging.getLogger(__name__)
+
 
 def github_error_handle(func):
     '''Error handler for all Github API issues.

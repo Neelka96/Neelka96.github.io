@@ -11,3 +11,9 @@ class DBAPI_Cursor(Protocol):
 class DBAPI_Connection(Protocol):
     def cursor(self) -> DBAPI_Cursor:
         ...
+
+
+# EOF
+
+if __name__ == '__main__':
+    print('This module is intended to be imported, not run directly.')

@@ -1,15 +1,17 @@
+# Import dependencies
 from github import Github, Auth
 from github.Repository import Repository
 from github.ContentFile import ContentFile
 from github.NamedUser import NamedUser as User
 from github.AuthenticatedUser import AuthenticatedUser as AuthUser
-
 from time import sleep
 import logging
 log = logging.getLogger(__name__)
 
-from .decorators import github_error_handle
-from Config import Config
+# Import libraries
+from lib import github_error_handle
+from config import Config
+
 
 class GitWrap:  # Like giftwrap? Ehh? :)
     def __init__(self, token):

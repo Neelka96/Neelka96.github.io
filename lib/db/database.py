@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session as Session_Class
 from sqlalchemy.sql import Executable
 
 # Import configuration
-from Config import Config
+from config import Config
 config = Config()
 
 # Create logger
@@ -17,23 +17,24 @@ log = logging.getLogger(__name__)
 from .protocols import DBAPI_Connection
 
 
+# Single engine instance for class blueprint
+engine = create_engine(config.ENGINE_URI)
+
+# Event listener for engine connection, enforces foreign keys upon connection
+@event.listens_for(Engine, 'connect')
+def enforce_sqlite_fks(dbapi: DBAPI_Connection, conn_record) -> None:
+    cursor = dbapi.cursor()
+    cursor.execute('PRAGMA foreign_keys=ON;')
+    cursor.close()
+    return None
+
+# Bind session to engine now that modifications to engine are done
+SessionLocal = sessionmaker(bind = engine, expire_on_commit = False)
+
 # Composition based class definition
 class Database:
     def __init__(self):
-        engine = create_engine(config.ENGINE_URI)
-        self._configure_engine()
-        # Bind session to engine now that modifications to engine are done
-        self.Session = sessionmaker(bind = engine, expire_on_commit = False)
-
-    # Event listener for engine connection, enforces foreign keys upon connection
-    def _configure_engine(self):
-        @event.listens_for(Engine, 'connect')
-        def enforce_sqlite_fks(dbapi: DBAPI_Connection, conn_record) -> int:
-            cursor = dbapi.cursor()
-            cursor.execute('PRAGMA foreign_keys=ON;')
-            cursor.close()
-            return 0
-
+        self.__session = SessionLocal
 
     # Context management handler for sessions for centralized handling
     @contextmanager
@@ -43,7 +44,7 @@ class Database:
         Yields:
             Generator[SessionType]: New session from bound engine connection pool.
         '''
-        session = self.Session()
+        session = self.__session()
         try:
             yield session
             session.commit()
@@ -55,9 +56,9 @@ class Database:
         finally:
             session.close()
             log.debug('Closing session.')
+            
 
-
-    # Utility For executing session requests
+    # Utility for executing session requests
     def execute_query(
             self
             ,stmt: Executable

@@ -1,11 +1,11 @@
 if __name__ == '__main__':
     # Setup logger before any imports begin
-    from core.logger import log_setup
+    from lib import log_setup
     log_setup()
 
     # Dependencies
-    from core.gitwrap import GitWrap
-    from Config import Config
+    from lib import GitWrap
+    from config import Config
     import logging
     
     

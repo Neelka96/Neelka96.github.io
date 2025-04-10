@@ -2,7 +2,7 @@ import logging
 import logging.config
 
 # Custom Configuration class for app
-from Config import Config
+from config import Config
 
 def log_setup() -> None:
     # Bring in singleton instance class
